@@ -125,7 +125,7 @@ std::optional<AssemblerDirective> process_line(std::string_view input, unsigned&
         handle_line_directive(tokens, line, filename);
         return {};
     }
-    else if (tokens.size() == 1 && tokens[0].back() == ':')
+    else if (tokens.size() == 1 && trim(tokens[0]).back() == ':')
     {
         handle_lone_label(tokens, line, filename);
         return {};
@@ -146,6 +146,7 @@ std::vector<AssemblerDirective> parse(std::string_view input, std::string_view f
 
     for (auto line : lines)
     {
+        line = trim(line);
         auto dir = process_line(line, line_number, current_filename);
         if (dir) directives.emplace_back(dir.value());
     }

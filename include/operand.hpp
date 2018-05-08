@@ -207,9 +207,46 @@ constexpr auto get_operand_tuple()
     return get_operand_tuple_impl<Mnemo>(Indices{});
 }
 
+inline bool is_reg(std::string_view str)
+{
+    if (str.size() != 2) return false;
+    if (str[0] != 'N' && str[0] != 'B' && str[0] != 'I') return false;
+    if (!isxdigit(str[1])) return false;
+
+    return true;
+}
+
+inline bool is_reg(std::string_view str, char reg)
+{
+    if (str.size() != 2) return false;
+    if (str[0] != reg) return false;
+    if (!isxdigit(str[1])) return false;
+
+    return true;
+}
+
+inline bool is_indir_reg(std::string_view str)
+{
+    if (str.size() != 5) return false;
+    if (str.substr(1, 4) != "(N" || str.back() != ')') return false;
+    if (!isxdigit(str[3])) return false;
+
+    return true;
+}
+
+inline bool is_indir_reg(std::string_view str, char reg)
+{
+    if (str.size() != 5) return false;
+    if (str.substr(0, 4) != reg + std::string("(N") || str.back() != ')') return false;
+    if (!isxdigit(str[3])) return false;
+
+    return true;
+}
+
 inline bool is_identifier(std::string_view str)
 {
-    return to_lower(std::string(str)).find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_.") == std::string_view::npos;
+    return !str.empty() && !is_reg(str) &&
+            to_lower(std::string(str)).find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_.") == std::string_view::npos;
 }
 
 inline bool is_string(std::string_view str)
@@ -236,24 +273,6 @@ inline bool is_address(std::string_view str)
 {
     return is_number(std::string(str))
             || is_identifier(str);
-}
-
-inline bool is_reg(std::string_view str, char reg)
-{
-    if (str.size() != 2) return false;
-    if (str[0] != reg) return false;
-    if (!isxdigit(str[1])) return false;
-
-    return true;
-}
-
-inline bool is_indir_reg(std::string_view str, char reg)
-{
-    if (str.size() != 5) return false;
-    if (str.substr(0, 4) != reg + std::string("(N") || str.back() != ')') return false;
-    if (!isxdigit(str[3])) return false;
-
-    return true;
 }
 
 inline bool is_indir_address(std::string_view str)
@@ -302,6 +321,18 @@ inline bool is_indir_address_plus_breg_plus_n(std::string_view str)
     str.remove_suffix(1);
 
     return true;
+}
+
+inline std::string_view get_indirect_offset(std::string_view str)
+{
+    return str.substr(str.find_last_of('+'), str.find_last_of(']') - str.find_last_of('+'));
+}
+
+inline bool has_indirect_offset(std::string_view str)
+{
+    if (str.find_last_of('+') == std::string_view::npos) return false;
+
+    return !is_reg(get_indirect_offset(str));
 }
 
 }

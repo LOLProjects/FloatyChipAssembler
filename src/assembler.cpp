@@ -165,18 +165,23 @@ uint32_t assemble_opcode(const Instruction& ins, const SymbolTable& tbl)
                 opcode |= xdigit_to_num(ins.arguments[idx][5]) << Opcode::template operand_offset<operand.indexed_breg_char()>()*4;
                 [[fallthrough]];
             case OperandType::IndirectIRegPlusN:
-                if (is_number(ins.arguments[idx].substr(6, ins.arguments[idx].size() - 6 - 1)))
+                if (has_indirect_offset(ins.arguments[idx]))
                 {
-                    const int value = std::stoi(ins.arguments[idx].substr(6, ins.arguments[idx].size() - 6 - 1), nullptr, 0);
-                    if ((operand.type() == OperandType::IndirectIRegPlusN         && (value <= -128 || value >= 128)) ||
+                    if (is_number(std::string{get_indirect_offset(ins.arguments[idx])}))
+                    {
+                        const int value = std::stoi(std::string{get_indirect_offset(ins.arguments[idx])}, nullptr, 0);
+                        if ((operand.type() == OperandType::IndirectIRegPlusN         && (value <= -128 || value >= 128)) ||
                             (operand.type() == OperandType::IndirectIRegPlusBRegPlusN && (value < 0 || value >= 16)))
-                        assembler_error_throw("indexed operand offset " + std::to_string(value) + " is out of range", ins.line, ins.filename);
-                    opcode |= (int8_t)value << Opcode::template operand_offset<'n'>()*4;
-                }
-                else if (ins.arguments[idx].size() > 6)
-                {
-                    assembler_error_throw("invalid indexed operand offset + '"
-                                          + ins.arguments[idx].substr(6, ins.arguments[idx].size() - 6 - 1) + "'", ins.line, ins.filename);
+                            assembler_error_throw("indexed operand offset "
+                                                  + std::string{get_indirect_offset(ins.arguments[idx])}
+                                                  + " is out of range", ins.line, ins.filename);
+                        opcode |= (int8_t)value << Opcode::template operand_offset<'n'>()*4;
+                    }
+                    else
+                    {
+                        assembler_error_throw("invalid indexed operand offset '"
+                                              + std::string{get_indirect_offset(ins.arguments[idx])} + "'", ins.line, ins.filename);
+                    }
                 }
                 [[fallthrough]];
             case OperandType::IndirectIReg:

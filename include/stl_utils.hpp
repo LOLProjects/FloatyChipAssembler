@@ -113,6 +113,31 @@ inline std::string to_lower(std::string str)
     for (auto & c: str) c = tolower(c);
     return str;
 }
+
+inline std::string_view trim_left(std::string_view str)
+{
+    while (!str.empty() && isspace(str.front()))
+    {
+        str.remove_prefix(1);
+    }
+
+    return str;
+}
+
+inline std::string_view trim_right(std::string_view str)
+{
+    while (!str.empty() && isspace(str.back()))
+    {
+        str.remove_suffix(1);
+    }
+
+    return str;
+}
+
+inline std::string_view trim(std::string_view str)
+{
+    return trim_left(trim_right(str));
+}
 }
 
 #endif // STL_UTILS_HPP
