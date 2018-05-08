@@ -12,6 +12,7 @@ include_directories("include")
 file(GLOB_RECURSE source_files "src/*.cpp")
 file(GLOB_RECURSE header_files "include/*.hpp" "include/*.def" "include/ctre/ctre")
 
+set(Boost_USE_STATIC_LIBS   ON)
 find_package(Boost COMPONENTS wave thread program_options regex REQUIRED)
 
 add_executable(${project_name} ${header_files} ${source_files})
