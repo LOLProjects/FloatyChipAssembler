@@ -1,8 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <boost/program_options.hpp>
-
 #include "preprocessor.hpp"
 #include "parser.hpp"
 #include "assembler.hpp"
@@ -11,63 +9,27 @@ int main(int argc, char *argv[])
 {
     try
     {
-
-        namespace po = boost::program_options;
-        // Declare the supported options.
-        po::options_description desc("Allowed options");
-        desc.add_options()
-                ("help,h", "Prints the help message")
-                ("input,i", po::value<std::string>(), "input file")
-                ("output,o", po::value<std::string>(), "output file")
-                ("format,f", po::value<std::string>(), "output format");
-
-        po::positional_options_description p;
-        p.add("input", 1);
-        p.add("output", 1);
-
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).
-                  options(desc).positional(p).run(), vm);
-        po::notify(vm);
-
         std::string infile = "input.asm";
         std::string outfile = "output.bin";
-        std::string outformatstr = "raw";
-        enum class Format
-        {
-            Raw
-        } outformat = Format::Raw;
 
-        if (vm.count("help") || vm.empty())
+        auto arguments = gsl::make_span(argv + 1, argc - 1);
+        if (arguments.size() < 1)
+        {
+            std::cerr << "No input file" << std::endl;
+            return -16;
+        }
+
+        if (arguments[0] == std::string("-h") || arguments[0] == std::string("--help"))
         {
             std::cout << "FloatyChip Assembler 0.0.1\n";
-            std::cout << desc << "\n";
+            std::cout << "Usage : FloatyChipAsm <input_file> <output_file>\n";
             return 0;
         }
 
-        if (vm.count("input"))
+        infile = arguments[0];
+        if (arguments.size() >= 2)
         {
-            infile = vm["input"].as<std::string>();
-        }
-
-        if (vm.count("output"))
-        {
-            outfile = vm["output"].as<std::string>();
-        }
-
-        if (vm.count("format"))
-        {
-            outformatstr = vm["format"].as<std::string>();
-        }
-
-        if (outformatstr == "raw")
-        {
-            outformat = Format::Raw;
-        }
-        else
-        {
-            std::cerr << "Invalid output format : " << outformatstr << " (types : 'raw')";
-            return -32;
+            outfile = arguments[1];
         }
 
         std::ifstream instream(infile);

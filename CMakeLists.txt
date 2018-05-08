@@ -13,7 +13,7 @@ file(GLOB_RECURSE source_files "src/*.cpp")
 file(GLOB_RECURSE header_files "include/*.hpp" "include/*.def" "include/ctre/ctre")
 
 set(Boost_USE_STATIC_LIBS   ON)
-find_package(Boost COMPONENTS wave program_options REQUIRED)
+find_package(Boost COMPONENTS wave REQUIRED)
 
 find_package (Threads)
 

@@ -31,8 +31,6 @@ SOFTWARE.
 #include "opcode_def.hpp"
 #include "pseudo_instructions.hpp"
 
-// TODO : invalid offset values
-
 namespace floaty
 {
 
@@ -200,9 +198,7 @@ uint32_t assemble_opcode(const Instruction& ins, const SymbolTable& tbl)
 // Explicitly instantiate functions for the opcode list so we can implement the function in the source file
 #define OPCODE_DEF(pattern, fmt) \
     static constexpr const char TOKENPASTE(opcode_pattern_, pattern)[] = #pattern; \
-    static constexpr const char TOKENPASTE(opcode_fmt_, pattern)[] = fmt; \
-    template uint32_t assemble_opcode<Opcode<TOKENPASTE(opcode_pattern_, pattern), TOKENPASTE(opcode_fmt_, pattern)>>(const Instruction&, const SymbolTable&); \
-    template bool matches<Opcode<TOKENPASTE(opcode_pattern_, pattern), TOKENPASTE(opcode_fmt_, pattern)>>(const Instruction&);
+    static constexpr const char TOKENPASTE(opcode_fmt_, pattern)[] = fmt;
 #include "opcodes.def"
 
 std::pair<bool(*)(const Instruction&), uint32_t(*)(const Instruction&, const SymbolTable&)> call_table[] =
