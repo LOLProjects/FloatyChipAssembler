@@ -25,13 +25,14 @@ SOFTWARE.
 
 #include "preprocessor.hpp"
 
+#define BOOST_WAVE_SUPPORT_THREADING 0
+
 #include <boost/wave.hpp>
 
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>    // token class
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp> // lexer class
 
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/regex.hpp>
 
 namespace floaty
 {
@@ -110,7 +111,6 @@ std::string preprocess(std::string_view input, std::string_view filename)
 void pre_preprocess(std::string &input)
 {
     boost::replace_all(input, ";", "//");
-    //input = boost::regex_replace(input, boost::regex{":+\n"}, ":/*$&*/");
 }
 
 }
