@@ -209,7 +209,7 @@ constexpr auto get_operand_tuple()
 
 inline bool is_identifier(std::string_view str)
 {
-    return str.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_.") == std::string_view::npos;
+    return to_lower(std::string(str)).find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789_.") == std::string_view::npos;
 }
 
 inline bool is_string(std::string_view str)
