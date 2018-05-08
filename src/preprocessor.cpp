@@ -25,8 +25,6 @@ SOFTWARE.
 
 #include "preprocessor.hpp"
 
-#define BOOST_WAVE_SUPPORT_THREADING 0
-
 #include <boost/wave.hpp>
 
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>    // token class

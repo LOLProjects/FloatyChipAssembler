@@ -15,5 +15,7 @@ file(GLOB_RECURSE header_files "include/*.hpp" "include/*.def" "include/ctre/ctr
 set(Boost_USE_STATIC_LIBS   ON)
 find_package(Boost COMPONENTS wave program_options REQUIRED)
 
+find_package (Threads)
+
 add_executable(${project_name} ${header_files} ${source_files})
-target_link_libraries(${project_name} ${Boost_LIBRARIES})
+target_link_libraries(${project_name} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
